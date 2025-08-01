@@ -1,9 +1,9 @@
 from mod.settings import load_settings
-import warnings
 from json import JSONDecodeError
+from .mod.github_api import GitHubAPI
 from mod.custom_exceptions import InvalidSettingsError
 
-class Main():
+class Updater():
     """Main class for the GHUpdateChecker package."""
 
     def __init__(self):
@@ -26,3 +26,13 @@ class Main():
             raise InvalidSettingsError("GHUpdateSettings.json not found. Please ensure it exists in the correct directory.")
         except JSONDecodeError:
             raise InvalidSettingsError("Error decoding GHUpdateSettings.json. Please ensure it is valid JSON.")
+
+        self.github_api = GitHubAPI(self.ghUsername, self.ghRepo)
+
+    def check_for_updates(self) -> bool:
+        """Check for updates in the GitHub repository."""    
+        latest_release = self.github_api.get_latest_release()
+        if latest_release and latest_release != self.currentVersion:
+            return True
+        else:
+            return False
