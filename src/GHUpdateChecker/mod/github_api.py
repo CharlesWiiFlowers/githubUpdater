@@ -1,4 +1,5 @@
 import requests
+import warnings
 
 class GitHubAPI:
     """Class for interacting with the GitHub API."""
@@ -13,4 +14,6 @@ class GitHubAPI:
         response = requests.get(f"{self.URL}/releases/latest")
         if response.status_code == 200:
             return response.json()["0"]["tag_name"]
-        return None
+        else:
+            warnings.warn(f"Failed to retrieve latest release: {response.status_code}") 
+            return None

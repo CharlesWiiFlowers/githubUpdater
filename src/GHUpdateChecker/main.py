@@ -29,7 +29,7 @@ class Updater():
 
         self.github_api = GitHubAPI(self.ghUsername, self.ghRepo)
 
-    def check_for_updates(self) -> bool:
+    def is_update_available(self) -> bool:
         """Check for updates in the GitHub repository."""    
         latest_release = self.github_api.get_latest_release()
         if latest_release and latest_release != self.currentVersion:
