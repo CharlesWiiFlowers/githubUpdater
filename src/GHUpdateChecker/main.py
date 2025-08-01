@@ -36,3 +36,12 @@ class Updater():
             return True
         else:
             return False
+
+    def get_latest_version(self) -> str | type[ConnectionError]:
+        """Get the latest version from the GitHub repository."""
+        latest_release = self.github_api.get_latest_release()
+        
+        if latest_release:
+            return latest_release
+        else:
+            return ConnectionError
