@@ -1,3 +1,6 @@
+import subprocess
+import os
+import sys
 from mod.settings import load_settings
 from json import JSONDecodeError
 from .mod.github_api import GitHubAPI
@@ -31,7 +34,7 @@ class Updater():
 
     def is_update_available(self) -> bool:
         """Check for updates in the GitHub repository."""    
-        latest_release = self.github_api.get_latest_release()
+        latest_release = self.github_api.get_latest_release_tag()
         if latest_release and latest_release != self.currentVersion:
             return True
         else:
@@ -39,9 +42,20 @@ class Updater():
 
     def get_latest_version(self) -> str | type[ConnectionError]:
         """Get the latest version from the GitHub repository."""
-        latest_release = self.github_api.get_latest_release()
+        latest_release = self.github_api.get_latest_release_tag()
         
         if latest_release:
             return latest_release
         else:
             return ConnectionError
+        
+    def install_last_release(self) -> None:
+        """Install the update by running the updater script."""
+
+        script_path = os.path.join(os.path.dirname(__file__), '..', 'scripts', 'updater.py')
+
+        if not os.path.isfile(script_path):
+            raise FileNotFoundError(f"Updater script not found at {script_path}")
+
+        subprocess.Popen([sys.executable, script_path, self.ghUsername, self.ghRepo, self.runFile, self.rootProject, self.currentVersion, self.debug, self.whitelist], cwd=os.path.dirname(__name__))
+        sys.exit(0)
